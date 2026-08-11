@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Craft Crafterina - Shipping Calculator</title>
+    <style>
+        :root {
+            --primary-sage: #a1ab89; /* Matches logo background */
+            --dark-sage: #75805c;    /* For text and contrast */
+            --hover-sage: #8b9573;   /* For button hover */
+            --light-bg: #f4f5f0;     /* Soft background */
+            --border-color: #d1d6c5; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            max-width: 500px;
+            width: 100%;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .logo {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        h2 {
+            color: var(--dark-sage);
+            margin: 0 0 5px 0;
+            font-size: 1.4em;
+        }
+        p.subtitle {
+            font-size: 0.9em;
+            color: #777;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--dark-sage);
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-sage);
+        }
+        input[readonly] {
+            background-color: var(--light-bg);
+            color: #666;
+            cursor: not-allowed;
+            border: 1px solid var(--border-color);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-sage);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: var(--hover-sage);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .status-msg {
+            font-size: 0.85em;
+            color: var(--dark-sage);
+            margin-top: 6px;
+            min-height: 15px;
+            font-style: italic;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: var(--light-bg);
+            border-left: 5px solid var(--primary-sage);
+            border-radius: 6px;
+            display: none;
+        }
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--dark-sage);
+            font-size: 1.1em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        .last-mile {
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #555;
+            background: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px dashed var(--border-color);
+        }
+        .last-mile strong {
+            color: var(--dark-sage);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <!-- Logo Integration -->
+        <img src="image_2.png" alt="Craft Crafterina Logo" class="logo">
+        <h2>Parcel Tariff Calculator</h2>
+        <p class="subtitle">Contractual Rates w.e.f. 01.08.2026 (inclusive of GST)</p>
+    </div>
+
+    <div class="form-group">
+        <label for="originPin">Origin Pincode</label>
+        <input type="number" id="originPin" value="679536" readonly>
+    </div>
+
+    <div class="form-group">
+        <label for="destPin">Destination Pincode</label>
+        <input type="tel" id="destPin" placeholder="Enter 6-digit Pincode" maxlength="6">
+        <div id="pinStatus" class="status-msg"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="zoneSelect">Shipping Zone</label>
+        <select id="zoneSelect">
+            <option value="0">Local</option>
+            <option value="1">Within State</option>
+            <option value="2">Zone / Metro</option>
+            <option value="3">Other States</option>
+        </select>
+        <div class="status-msg">Auto-selected based on Pincodes. Adjust if needed.</div>
+    </div>
+
+    <div class="form-group">
+        <label for="weight">Parcel Weight (grams)</label>
+        <input type="tel" id="weight" placeholder="e.g., 1500">
+    </div>
+
+    <button onclick="calculateRates()">Calculate Shipping</button>
+
+    <div id="resultBox" class="result-box">
+        <div class="result-title">Estimated Charges</div>
+        <div class="result-item">
+            <span>India Post Parcel:</span>
+            <span id="resIndiaPost" style="font-weight: 600;">₹0</span>
+        </div>
+        <div class="result-item">
+            <span>Speed Post Parcel:</span>
+            <span id="resSpeedPost" style="font-weight: 600;">₹0</span>
+        </div>
+        
+        <div id="lastMileBox" class="last-mile" style="display: none;">
+            <strong>Last Mile Delivery (Max 5kg):</strong><br>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                <span>Booked at Delivery Office:</span>
+                <span id="lmDelivery" style="font-weight: 600;"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                <span>Booked at Parcel Hub/Processing:</span>
+                <span id="lmHub" style="font-weight: 600;"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ratesData = {
+        indiaPost: [
+            {w: 500, r: [31, 37, 40, 41]}, {w: 1000, r: [37, 52, 61, 67]}, {w: 1500, r: [42, 68, 82, 94]}, 
+            {w: 2000, r: [53, 94, 118, 135]}, {w: 3000, r: [67, 118, 147, 171]}, {w: 4000, r: [81, 142, 178, 207]}, 
+            {w: 5000, r: [95, 166, 207, 241]}, {w: 6000, r: [114, 188, 236, 277]}, {w: 7000, r: [131, 212, 265, 313]}, 
+            {w: 8000, r: [148, 236, 296, 349]}, {w: 9000, r: [167, 260, 325, 383]}, {w: 10000, r: [184, 284, 354, 419]}, 
+            {w: 11000, r: [201, 306, 383, 455]}, {w: 12000, r: [220, 330, 414, 489]}, {w: 13000, r: [237, 354, 443, 525]}, 
+            {w: 14000, r: [254, 378, 472, 561]}, {w: 15000, r: [273, 402, 501, 595]}, {w: 16000, r: [290, 424, 532, 631]}, 
+            {w: 17000, r: [307, 448, 561, 667]}, {w: 18000, r: [326, 472, 590, 703]}, {w: 19000, r: [343, 496, 619, 737]}, 
+            {w: 20000, r: [362, 520, 650, 773]}, {w: 21000, r: [379, 542, 679, 809]}, {w: 22000, r: [396, 566, 708, 843]}, 
+            {w: 23000, r: [415, 590, 737, 879]}, {w: 24000, r: [432, 614, 768, 915]}, {w: 25000, r: [449, 638, 797, 949]}, 
+            {w: 26000, r: [468, 660, 826, 985]}, {w: 27000, r: [485, 684, 855, 1021]}, {w: 28000, r: [502, 708, 886, 1057]}, 
+            {w: 29000, r: [521, 732, 915, 1091]}, {w: 30000, r: [538, 756, 944, 1127]}, {w: 31000, r: [555, 778, 973, 1163]}, 
+            {w: 32000, r: [574, 802, 1004, 1197]}, {w: 33000, r: [591, 826, 1033, 1233]}, {w: 34000, r: [608, 850, 1062, 1269]}, 
+            {w: 35000, r: [627, 874, 1091, 1303]}
+        ],
+        speedPost: [
+            {w: 500, r: [34, 42, 48, 55]}, {w: 1000, r: [37, 57, 77, 83]}, {w: 1500, r: [42, 76, 130, 178]}, 
+            {w: 2000, r: [53, 105, 166, 224]}, {w: 3000, r: [67, 131, 224, 296]}, {w: 4000, r: [81, 157, 277, 359]}, 
+            {w: 5000, r: [95, 184, 325, 414]}, {w: 6000, r: [114, 213, 395, 489]}, {w: 7000, r: [131, 244, 467, 566]}, 
+            {w: 8000, r: [148, 273, 537, 643]}, {w: 9000, r: [167, 302, 607, 720]}, {w: 10000, r: [184, 331, 679, 797]}, 
+            {w: 11000, r: [201, 362, 749, 874]}, {w: 12000, r: [220, 391, 821, 949]}, {w: 13000, r: [237, 420, 891, 1026]}, 
+            {w: 14000, r: [254, 449, 961, 1103]}, {w: 15000, r: [273, 480, 1033, 1180]}, {w: 16000, r: [290, 509, 1103, 1257]}, 
+            {w: 17000, r: [307, 538, 1175, 1334]}, {w: 18000, r: [326, 567, 1245, 1411]}, {w: 19000, r: [343, 598, 1315, 1486]}, 
+            {w: 20000, r: [362, 627, 1387, 1563]}, {w: 21000, r: [379, 656, 1457, 1640]}, {w: 22000, r: [396, 685, 1529, 1717]}, 
+            {w: 23000, r: [415, 716, 1599, 1794]}, {w: 24000, r: [432, 745, 1669, 1871]}, {w: 25000, r: [449, 774, 1741, 1948]}, 
+            {w: 26000, r: [468, 803, 1811, 2023]}, {w: 27000, r: [485, 834, 1883, 2100]}, {w: 28000, r: [502, 863, 1953, 2177]}, 
+            {w: 29000, r: [521, 892, 2023, 2254]}, {w: 30000, r: [538, 921, 2095, 2331]}, {w: 31000, r: [555, 952, 2165, 2408]}, 
+            {w: 32000, r: [574, 981, 2237, 2483]}, {w: 33000, r: [591, 1010, 2307, 2560]}, {w: 34000, r: [608, 1039, 2377, 2637]}, 
+            {w: 35000, r: [627, 1070, 2449, 2714]}
+        ]
+    };
+
+    const destPinInput = document.getElementById('destPin');
+    const originPinInput = document.getElementById('originPin');
+    const zoneSelect = document.getElementById('zoneSelect');
+    const pinStatus = document.getElementById('pinStatus');
+
+    async function fetchPincodeDetails(pincode) {
+        try {
+            const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+            const data = await res.json();
+            if (data && data[0].Status === "Success") return data[0].PostOffice[0];
+        } catch (e) { console.error("API error", e); }
+        return null;
+    }
+
+    async function evaluateZone() {
+        const oPin = originPinInput.value.trim();
+        const dPin = destPinInput.value.trim();
+        
+        if (dPin.length === 6 && oPin.length === 6) {
+            pinStatus.innerHTML = "Looking up pincode details...";
+            const oData = await fetchPincodeDetails(oPin);
+            const dData = await fetchPincodeDetails(dPin);
+            
+            if (oData && dData) {
+                pinStatus.innerHTML = `Destination: ${dData.District}, ${dData.State}`;
+                
+                if (oData.District === dData.District || oPin.substring(0,3) === dPin.substring(0,3)) {
+                    zoneSelect.value = "0"; // Local
+                } else if (oData.State === dData.State) {
+                    zoneSelect.value = "1"; // Within State
+                } else {
+                    const metros = ["Delhi", "Mumbai", "Kolkata", "Chennai", "Bengaluru", "Hyderabad", "Bangalore"];
+                    const isMetro = metros.some(m => dData.District.includes(m) || dData.Region.includes(m));
+                    zoneSelect.value = isMetro ? "2" : "3"; // Zone/Metro OR Other States
+                }
+            } else {
+                pinStatus.innerHTML = "Could not fetch details. Please select zone manually.";
+            }
+        } else if (dPin.length < 6) {
+            pinStatus.innerHTML = "";
+        }
+    }
+
+    destPinInput.addEventListener('input', evaluateZone);
+
+    function getRate(weight, type, zoneIdx) {
+        if (weight > 35000) return "Max 35kg";
+        const table = ratesData[type];
+        const slab = table.find(row => weight <= row.w);
+        return slab ? `₹${slab.r[zoneIdx]}` : "N/A";
+    }
+
+    function calculateRates() {
+        const weight = parseInt(document.getElementById('weight').value);
+        const zoneIdx = parseInt(document.getElementById('zoneSelect').value);
+        const resultBox = document.getElementById('resultBox');
+        
+        if (!weight || weight <= 0) {
+            alert("Please enter a valid parcel weight in grams.");
+            return;
+        }
+        
+        document.getElementById('resIndiaPost').innerText = getRate(weight, 'indiaPost', zoneIdx);
+        document.getElementById('resSpeedPost').innerText = getRate(weight, 'speedPost', zoneIdx);
+
+        const lmBox = document.getElementById('lastMileBox');
+        if (weight <= 5000) {
+            lmBox.style.display = "block";
+            document.getElementById('lmDelivery').innerText = weight <= 2000 ? "₹17" : "₹26";
+            document.getElementById('lmHub').innerText = weight <= 2000 ? "₹24" : "₹41";
+        } else {
+            lmBox.style.display = "none";
+        }
+
+        resultBox.style.display = "block";
+    }
+</script>
+
+</body>
+</html>
