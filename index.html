@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Craft Crafterina - Shipping Calculator</title>
+    <title>Craft Crafterina - Speed Post Calculator</title>
     <!-- Import cursive font for the logo -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
@@ -66,7 +66,7 @@
             font-size: 2.4em;
             line-height: 0.9;
             margin-bottom: 12px;
-            transform: rotate(-2deg); /* slight tilt for natural look */
+            transform: rotate(-2deg);
         }
         .logo-sans {
             font-family: 'Georgia', serif;
@@ -162,17 +162,9 @@
             margin-bottom: 10px;
             font-size: 1.05em;
         }
-        .last-mile {
-            margin-top: 15px;
-            font-size: 0.95em;
-            color: #555;
-            background: #fff;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px dashed var(--border-color);
-        }
-        .last-mile strong {
-            color: var(--dark-sage);
+        .highlight {
+            font-weight: bold;
+            color: #1b5e20;
         }
     </style>
 </head>
@@ -180,8 +172,6 @@
 
 <div class="container">
     <div class="header-section">
-        
-        <!-- CSS Only Logo -->
         <div class="css-logo">
             <div class="css-logo-inner">
                 <div class="logo-cursive">
@@ -193,8 +183,8 @@
             </div>
         </div>
 
-        <h2>Parcel Tariff Calculator</h2>
-        <p class="subtitle">Contractual Rates w.e.f. 01.08.2026 (inclusive of GST)</p>
+        <h2>Speed Post Calculator</h2>
+        <p class="subtitle">Retail & Business Rates (inclusive of GST)</p>
     </div>
 
     <div class="form-group">
@@ -229,46 +219,36 @@
     <div id="resultBox" class="result-box">
         <div class="result-title">Estimated Charges</div>
         <div class="result-item">
-            <span>India Post Parcel:</span>
-            <span id="resIndiaPost" style="font-weight: 600;">₹0</span>
+            <span>Speed Post (Retail):</span>
+            <span id="resSpeedPostRetail" class="highlight">₹0</span>
         </div>
         <div class="result-item">
-            <span>Speed Post Parcel:</span>
-            <span id="resSpeedPost" style="font-weight: 600;">₹0</span>
-        </div>
-        
-        <div id="lastMileBox" class="last-mile" style="display: none;">
-            <strong>Last Mile Delivery (Max 5kg):</strong><br>
-            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                <span>Booked at Delivery Office:</span>
-                <span id="lmDelivery" style="font-weight: 600;"></span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                <span>Booked at Parcel Hub/Processing:</span>
-                <span id="lmHub" style="font-weight: 600;"></span>
-            </div>
+            <span>Speed Post (Business):</span>
+            <span id="resSpeedPostBusiness" class="highlight">₹0</span>
         </div>
     </div>
 </div>
 
 <script>
     const ratesData = {
-        indiaPost: [
-            {w: 500, r: [31, 37, 40, 41]}, {w: 1000, r: [37, 52, 61, 67]}, {w: 1500, r: [42, 68, 82, 94]}, 
-            {w: 2000, r: [53, 94, 118, 135]}, {w: 3000, r: [67, 118, 147, 171]}, {w: 4000, r: [81, 142, 178, 207]}, 
-            {w: 5000, r: [95, 166, 207, 241]}, {w: 6000, r: [114, 188, 236, 277]}, {w: 7000, r: [131, 212, 265, 313]}, 
-            {w: 8000, r: [148, 236, 296, 349]}, {w: 9000, r: [167, 260, 325, 383]}, {w: 10000, r: [184, 284, 354, 419]}, 
-            {w: 11000, r: [201, 306, 383, 455]}, {w: 12000, r: [220, 330, 414, 489]}, {w: 13000, r: [237, 354, 443, 525]}, 
-            {w: 14000, r: [254, 378, 472, 561]}, {w: 15000, r: [273, 402, 501, 595]}, {w: 16000, r: [290, 424, 532, 631]}, 
-            {w: 17000, r: [307, 448, 561, 667]}, {w: 18000, r: [326, 472, 590, 703]}, {w: 19000, r: [343, 496, 619, 737]}, 
-            {w: 20000, r: [362, 520, 650, 773]}, {w: 21000, r: [379, 542, 679, 809]}, {w: 22000, r: [396, 566, 708, 843]}, 
-            {w: 23000, r: [415, 590, 737, 879]}, {w: 24000, r: [432, 614, 768, 915]}, {w: 25000, r: [449, 638, 797, 949]}, 
-            {w: 26000, r: [468, 660, 826, 985]}, {w: 27000, r: [485, 684, 855, 1021]}, {w: 28000, r: [502, 708, 886, 1057]}, 
-            {w: 29000, r: [521, 732, 915, 1091]}, {w: 30000, r: [538, 756, 944, 1127]}, {w: 31000, r: [555, 778, 973, 1163]}, 
-            {w: 32000, r: [574, 802, 1004, 1197]}, {w: 33000, r: [591, 826, 1033, 1233]}, {w: 34000, r: [608, 850, 1062, 1269]}, 
-            {w: 35000, r: [627, 874, 1091, 1303]}
+        // Updated data specifically transcribing Speed Post Retail from the new image
+        speedPostRetail: [
+            {w: 500, r: [34, 90, 96, 106]}, {w: 1000, r: [56, 119, 161, 169]}, {w: 1500, r: [70, 154, 214, 270]}, 
+            {w: 2000, r: [103, 210, 300, 377]}, {w: 3000, r: [136, 287, 419, 532]}, {w: 4000, r: [171, 352, 521, 600]}, 
+            {w: 5000, r: [206, 425, 637, 810]}, {w: 6000, r: [247, 497, 748, 952]}, {w: 7000, r: [288, 567, 861, 1092]}, 
+            {w: 8000, r: [329, 639, 972, 1234]}, {w: 9000, r: [370, 709, 1085, 1376]}, {w: 10000, r: [411, 779, 1196, 1518]}, 
+            {w: 11000, r: [454, 851, 1309, 1600]}, {w: 12000, r: [495, 921, 1420, 1800]}, {w: 13000, r: [536, 993, 1533, 1942]}, 
+            {w: 14000, r: [577, 1063, 1644, 2084]}, {w: 15000, r: [618, 1133, 1757, 2226]}, {w: 16000, r: [659, 1205, 1870, 2368]}, 
+            {w: 17000, r: [700, 1275, 1981, 2508]}, {w: 18000, r: [743, 1275, 1994, 2550]}, {w: 19000, r: [743, 1347, 2094, 2650]}, 
+            {w: 20000, r: [784, 1417, 2205, 2792]}, {w: 21000, r: [825, 1487, 2318, 2934]}, {w: 22000, r: [866, 1559, 2429, 3076]}, 
+            {w: 23000, r: [907, 1629, 2542, 3216]}, {w: 24000, r: [948, 1701, 2653, 3358]}, {w: 25000, r: [991, 1771, 2766, 3500]}, 
+            {w: 26000, r: [1032, 1841, 2879, 3642]}, {w: 27000, r: [1073, 1913, 2990, 3784]}, {w: 28000, r: [1114, 1983, 3103, 3924]}, 
+            {w: 29000, r: [1155, 2055, 3214, 4066]}, {w: 30000, r: [1196, 2125, 3327, 4208]}, {w: 31000, r: [1237, 2195, 3438, 4350]}, 
+            {w: 32000, r: [1280, 2267, 3551, 4492]}, {w: 33000, r: [1320, 2337, 3551, 4492]}, {w: 34000, r: [1362, 2409, 3775, 4774]}, 
+            {w: 35000, r: [1404, 2449, 3886, 4916]}, {w: 999999, r: [1446, 2499, 3999, 5058]} // Represents 35000+
         ],
-        speedPost: [
+        // Speed Post Business (formerly contractual) from the original image setup
+        speedPostBusiness: [
             {w: 500, r: [34, 42, 48, 55]}, {w: 1000, r: [37, 57, 77, 83]}, {w: 1500, r: [42, 76, 130, 178]}, 
             {w: 2000, r: [53, 105, 166, 224]}, {w: 3000, r: [67, 131, 224, 296]}, {w: 4000, r: [81, 157, 277, 359]}, 
             {w: 5000, r: [95, 184, 325, 414]}, {w: 6000, r: [114, 213, 395, 489]}, {w: 7000, r: [131, 244, 467, 566]}, 
@@ -331,7 +311,9 @@
     destPinInput.addEventListener('input', evaluateZone);
 
     function getRate(weight, type, zoneIdx) {
-        if (weight > 35000) return "Max 35kg";
+        // Business limits out at 35000 exactly, Retail has a 35000+ tier mapped to 999999
+        if (type === 'speedPostBusiness' && weight > 35000) return "N/A";
+        
         const table = ratesData[type];
         const slab = table.find(row => weight <= row.w);
         return slab ? `₹${slab.r[zoneIdx]}` : "N/A";
@@ -347,17 +329,8 @@
             return;
         }
         
-        document.getElementById('resIndiaPost').innerText = getRate(weight, 'indiaPost', zoneIdx);
-        document.getElementById('resSpeedPost').innerText = getRate(weight, 'speedPost', zoneIdx);
-
-        const lmBox = document.getElementById('lastMileBox');
-        if (weight <= 5000) {
-            lmBox.style.display = "block";
-            document.getElementById('lmDelivery').innerText = weight <= 2000 ? "₹17" : "₹26";
-            document.getElementById('lmHub').innerText = weight <= 2000 ? "₹24" : "₹41";
-        } else {
-            lmBox.style.display = "none";
-        }
+        document.getElementById('resSpeedPostRetail').innerText = getRate(weight, 'speedPostRetail', zoneIdx);
+        document.getElementById('resSpeedPostBusiness').innerText = getRate(weight, 'speedPostBusiness', zoneIdx);
 
         resultBox.style.display = "block";
     }
